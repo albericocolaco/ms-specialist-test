@@ -1,19 +1,13 @@
 package br.com.arcls.msspecialisttest.config.security;
 
 import br.com.arcls.msspecialisttest.domain.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.util.*;
 
 import static java.lang.String.format;
 
@@ -33,6 +27,7 @@ public class JwtTokenUtil {
         return Jwts.builder()
                 .setSubject(format("%s,%s", user.getId(), user.getUsername()))
                 .setIssuer(jwtIssuer)
+                .setClaims(getClaims(user))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 42000)) // 42 Seconds
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -66,21 +61,32 @@ public class JwtTokenUtil {
         return claims.getExpiration();
     }
 
-    public boolean validate(String token) {
+    public Claims getJwtClaims(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-            return true;
+            return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         } catch (SignatureException ex) {
             logger.error("Invalid JWT signature - {}", ex.getMessage());
+            throw ex;
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token - {}", ex.getMessage());
+            throw ex;
         } catch (ExpiredJwtException ex) {
             logger.error("Expired JWT token - {}", ex.getMessage());
+            throw ex;
         } catch (UnsupportedJwtException ex) {
             logger.error("Unsupported JWT token - {}", ex.getMessage());
+            throw ex;
         } catch (IllegalArgumentException ex) {
             logger.error("JWT claims string is empty - {}", ex.getMessage());
+            throw ex;
         }
-        return false;
+    }
+
+    private Map<String, Object> getClaims(User user) {
+        final Map<String, Object> result = new HashMap<>();
+        result.put("userId", user.getId().toString());
+        result.put("fullName", user.getFullName());
+        result.put("authorities", user.getAuthorities());
+        return result;
     }
 }

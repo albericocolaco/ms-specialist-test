@@ -1,7 +1,10 @@
 package br.com.arcls.msspecialisttest.config.security;
 
 import br.com.arcls.msspecialisttest.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,13 +39,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         final String token = header.split(" ")[1].trim();
-        if (!jwtTokenUtil.validate(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+
+        final Claims jwtClaims = jwtTokenUtil.getJwtClaims(token);
 
         UserDetails userDetails = userRepository
-                .findByUsername(jwtTokenUtil.getUsername(token))
+                .findById(new ObjectId(jwtClaims.get("userId").toString()))
                 .orElse(null);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
