@@ -1,0 +1,5 @@
+br\com\arcls\msspecialisttest\service\LogServiceTest.class
+br\com\arcls\msspecialisttest\util\JsonHelper.class
+br\com\arcls\msspecialisttest\fixture\LogRequestFixture.class
+br\com\arcls\msspecialisttest\fixture\LogFixture.class
+br\com\arcls\msspecialisttest\MsSpecialistTestApplicationTests.class

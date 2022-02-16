@@ -1,0 +1,27 @@
+server:
+  servlet:
+    context-path: /ms-st
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: INFO
+spring:
+  data:
+    mongodb:
+      database: ms_alb_test_db
+      port: 27017
+      host: mongo
+
+springdoc:
+  api-docs:
+    enabled: true
+
+#WebSecurity
+jwt:
+  secret: zdtlD3JK56m6wTTgsNFhqzjqP
+  issuer: br.com.arcls

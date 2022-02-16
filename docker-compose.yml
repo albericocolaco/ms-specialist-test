@@ -1,0 +1,28 @@
+version: '1'
+
+services:
+  springboot:
+    build: .
+    container_name: ms-alb-api
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    networks:
+      - ms-alb-test
+
+  mongo:
+    image: mongo
+    container_name: ms-alb-mongodb
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: ms_alb_test_db
+    networks:
+      - ms-alb-test
+
+networks:
+  ms-alb-test:
+    driver: bridge
