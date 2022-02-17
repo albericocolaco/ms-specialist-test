@@ -15,7 +15,7 @@ public class LogRequest {
     @NotBlank
     private String flag;
     @NotNull
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape=JsonFormat.Shape.STRING)
     private LocalDateTime transactionAt;
     @NotBlank
     private String client;
